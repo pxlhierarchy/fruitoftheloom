@@ -3,6 +3,17 @@ import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
+// Helper function to safely parse JSON
+const safeJsonParse = (data) => {
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+    return null;
+  }
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -16,7 +27,14 @@ export function AuthProvider({ children }) {
     
     if (storedToken && storedUser) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      const parsedUser = safeJsonParse(storedUser);
+      if (parsedUser) {
+        setUser(parsedUser);
+      } else {
+        // If parsing failed, clear the invalid data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
     
     setLoading(false);
