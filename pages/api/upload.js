@@ -30,7 +30,8 @@ export default async function handler(req, res) {
     // Parse the form data
     const form = formidable({
       keepExtensions: true,
-      multiples: false
+      multiples: false,
+      maxFileSize: 10 * 1024 * 1024, // 10MB limit
     });
     
     const [fields, files] = await new Promise((resolve, reject) => {
@@ -55,8 +56,20 @@ export default async function handler(req, res) {
       });
     }
 
+    // Read the file data
+    const fileData = await new Promise((resolve, reject) => {
+      const chunks = [];
+      file.on('data', chunk => chunks.push(chunk));
+      file.on('end', () => resolve(Buffer.concat(chunks)));
+      file.on('error', reject);
+    });
+
+    // Create a new file object with the correct data
+    const fileToUpload = new Blob([fileData], { type: file.mimetype });
+    fileToUpload.name = file.originalFilename;
+
     // Upload to Vercel Blob Storage
-    const { url, pathname, filename, mimeType } = await uploadToBlob(file, {
+    const { url, pathname, filename, mimeType } = await uploadToBlob(fileToUpload, {
       access: 'public',
       folder: 'images',
     });
