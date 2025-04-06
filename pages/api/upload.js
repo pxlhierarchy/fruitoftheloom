@@ -60,9 +60,9 @@ export default async function handler(req, res) {
     // Store metadata in Redis
     const metadata = {
       id: imageId,
-      url,
-      pathname,
-      filename: file.originalFilename,
+      url: url,
+      pathname: pathname,
+      filename: file.originalFilename || file.name,
       mimeType: file.mimetype,
       size: file.size,
       uploadedBy: decoded.email,

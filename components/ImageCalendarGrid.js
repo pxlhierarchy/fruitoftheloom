@@ -133,12 +133,12 @@ export default function ImageCalendarGrid() {
                   {dayImages.slice(0, 4).map((image, index) => (
                     <div key={image._id} className="relative overflow-hidden group/item">
                       <img
-                        src={image.url}
+                        src={image.url || '/placeholder.svg'}
                         alt={image.filename || 'Calendar image'}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = '/placeholder.png';
+                          e.target.src = '/placeholder.svg';
                           console.error('Failed to load image:', image.url);
                         }}
                       />

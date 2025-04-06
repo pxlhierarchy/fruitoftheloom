@@ -108,12 +108,12 @@ export default function ImageCalendar() {
               {dayImages.slice(0, 4).map((image, index) => (
                 <div key={image._id} className="relative group">
                   <img
-                    src={image.url}
+                    src={image.url || '/placeholder.svg'}
                     alt={image.filename || 'Calendar image'}
                     className="w-full h-14 object-cover rounded"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/placeholder.png';
+                      e.target.src = '/placeholder.svg';
                       console.error('Failed to load image:', image.url);
                     }}
                   />
