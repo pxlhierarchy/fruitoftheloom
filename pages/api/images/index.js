@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { verifyToken } from '../../../lib/auth';
 import { getRedisClient } from '../../../lib/redis';
 

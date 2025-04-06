@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import { uploadToBlob } from '../../lib/blob-storage';
 import { verifyToken } from '../../lib/auth';
