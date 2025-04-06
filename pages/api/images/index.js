@@ -10,16 +10,20 @@ export default async function handler(req, res) {
     // Verify authentication token
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+      console.error('No token provided in request');
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
+      console.error('Invalid token provided:', token);
       return res.status(401).json({ success: false, error: 'Invalid token' });
     }
 
+    console.log('Authenticated user:', decoded.email);
+
     // Get query parameters
-    const { skip = 0, limit = 20 } = req.query;
+    const { skip = 0, limit = 20, startDate, endDate } = req.query;
     const skipNum = parseInt(skip, 10);
     const limitNum = parseInt(limit, 10);
 
@@ -31,12 +35,22 @@ export default async function handler(req, res) {
 
     // Get all image IDs
     const imageIds = await getFromRedisList(redis, 'images:list', skipNum, skipNum + limitNum - 1);
+    console.log(`Found ${imageIds.length} image IDs`);
     
     // Get image metadata for each ID
     const images = await Promise.all(
       imageIds.map(async (id) => {
         const data = await redis.get(id);
-        return data ? JSON.parse(data) : null;
+        if (!data) {
+          console.error(`No data found for image ID: ${id}`);
+          return null;
+        }
+        try {
+          return JSON.parse(data);
+        } catch (error) {
+          console.error(`Error parsing data for image ID ${id}:`, error);
+          return null;
+        }
       })
     );
 
@@ -45,20 +59,19 @@ export default async function handler(req, res) {
       .filter(Boolean)
       .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
+    console.log(`Returning ${validImages.length} valid images`);
+
     // Get total count
     const total = await getRedisListLength(redis, 'images:list');
 
-    // Return success response
+    // Return the images
     return res.status(200).json({
       success: true,
       data: {
         images: validImages,
-        pagination: {
-          total,
-          skip: skipNum,
-          limit: limitNum,
-          hasMore: skipNum + limitNum < total,
-        },
+        total,
+        skip: skipNum,
+        limit: limitNum,
       },
     });
   } catch (error) {

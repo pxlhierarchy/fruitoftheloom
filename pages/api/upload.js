@@ -66,12 +66,27 @@ export default async function handler(req, res) {
 
     // Create a new file object with the correct data
     const fileToUpload = new Blob([fileData], { type: file.mimetype });
-    fileToUpload.name = file.originalFilename;
+    fileToUpload.name = file.originalFilename || 'image.jpg';
+
+    // Log the file details for debugging
+    console.log('File to upload:', {
+      name: fileToUpload.name,
+      type: fileToUpload.type,
+      size: fileToUpload.size
+    });
 
     // Upload to Vercel Blob Storage
     const { url, pathname, filename, mimeType } = await uploadToBlob(fileToUpload, {
       access: 'public',
       folder: 'images',
+    });
+
+    // Log the upload result for debugging
+    console.log('Upload result:', {
+      url,
+      pathname,
+      filename,
+      mimeType
     });
 
     // Get Redis client
@@ -94,6 +109,9 @@ export default async function handler(req, res) {
       uploadedBy: decoded.email,
       uploadedAt: new Date().toISOString(),
     };
+
+    // Log the metadata for debugging
+    console.log('Storing metadata:', metadata);
 
     // Store the image metadata
     await redis.set(imageId, JSON.stringify(metadata));

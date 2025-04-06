@@ -29,6 +29,8 @@ export default function ImageCalendarGrid() {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
       
+      console.log('Fetching images with token:', token ? 'Token present' : 'No token');
+      
       const response = await fetch(
         `/api/images?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         {
@@ -38,16 +40,24 @@ export default function ImageCalendarGrid() {
         }
       );
       
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error fetching images:', response.status, errorData);
+        throw new Error(errorData.error || `Failed to fetch images: ${response.status}`);
+      }
+      
       const data = await response.json();
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to fetch images');
       }
       
+      console.log('Fetched images:', data.data.images);
+      
       // Group images by day
       const groupedImages = {};
       data.data.images.forEach(image => {
-        const day = new Date(image.timestamp).getDate();
+        const day = new Date(image.uploadedAt).getDate();
         if (!groupedImages[day]) {
           groupedImages[day] = [];
         }
@@ -55,8 +65,10 @@ export default function ImageCalendarGrid() {
       });
       
       setImages(groupedImages);
+      setError(null);
     } catch (err) {
-      setError(err.message || 'Error fetching images');
+      console.error('Error fetching images:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
