@@ -5,10 +5,5 @@
       "src": "package.json",
       "use": "@vercel/next"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb-uri",
-    "MONGODB_DB": "@mongodb-db",
-    "JWT_SECRET": "@jwt-secret"
-  }
+  ]
 } 
