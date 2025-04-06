@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ImageUploader from '../components/ImageUploader';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
+import FixImagesButton from '../components/FixImagesButton';
 
 export default function Home() {
   return (
@@ -81,6 +82,10 @@ function HomeContent() {
       
       <div className="mb-12">
         <ImageUploader />
+      </div>
+      
+      <div className="mb-12">
+        <FixImagesButton />
       </div>
       
       <h2 className="text-2xl font-bold mb-6">Uploaded Images</h2>
