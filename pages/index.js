@@ -17,12 +17,16 @@ function HomeContent() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
 
   const fetchImages = async (pageNum = 0) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/images?skip=${pageNum * 20}&limit=20`);
+      const response = await fetch(`/api/images?skip=${pageNum * 20}&limit=20`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       
       if (!data.success) {
@@ -44,8 +48,10 @@ function HomeContent() {
   };
 
   useEffect(() => {
-    fetchImages();
-  }, []);
+    if (token) {
+      fetchImages();
+    }
+  }, [token]);
 
   const loadMore = () => {
     const nextPage = page + 1;

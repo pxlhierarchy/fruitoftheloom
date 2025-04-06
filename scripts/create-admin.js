@@ -1,5 +1,5 @@
 // Script to create an admin account
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function createAdminAccount() {
   try {
@@ -16,8 +16,8 @@ async function createAdminAccount() {
     });
 
     const data = await response.json();
-    console.log('Admin account creation response:', data);
-    
+    console.log('Response:', data);
+
     if (data.success) {
       console.log('Admin account created successfully!');
     } else {
