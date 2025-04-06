@@ -49,7 +49,14 @@ export default async function handler(req, res) {
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!allowedTypes.includes(file.mimetype)) {
+    console.log('File mimetype:', file.mimetype);
+    
+    // Check if the mimetype is in the allowed list or if it's a generic image type
+    const isAllowedType = allowedTypes.includes(file.mimetype) || 
+                          file.mimetype.startsWith('image/');
+    
+    if (!isAllowedType) {
+      console.error('Invalid file type:', file.mimetype);
       return res.status(400).json({ 
         success: false, 
         error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.' 
