@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import { uploadToBlob } from '../../lib/blob-storage';
-import { connectToDatabase } from '../../lib/mongodb';
 import { verifyToken } from '../../lib/auth';
+import { getRedisClient } from '../../lib/redis';
 
 // Disable the default body parser to handle form data
 export const config = {
@@ -49,29 +49,37 @@ export default async function handler(req, res) {
       folder: 'images',
     });
 
-    // Connect to MongoDB
-    const { db } = await connectToDatabase();
+    // Get Redis client
+    const redis = await getRedisClient();
+    if (!redis) {
+      throw new Error('Failed to connect to Redis');
+    }
 
-    // Store metadata in MongoDB
+    // Generate a unique ID for the image
+    const imageId = `image:${Date.now()}:${Math.random().toString(36).substr(2, 9)}`;
+
+    // Store metadata in Redis
     const metadata = {
+      id: imageId,
       url,
       pathname,
       filename: file.originalFilename,
       mimeType: file.mimetype,
       size: file.size,
       uploadedBy: decoded.email,
-      uploadedAt: new Date(),
+      uploadedAt: new Date().toISOString(),
     };
 
-    const result = await db.collection('images').insertOne(metadata);
+    // Store the image metadata
+    await redis.set(imageId, JSON.stringify(metadata));
+
+    // Add the image ID to a list of all images
+    await redis.lpush('images:list', imageId);
 
     // Return success response
     return res.status(200).json({
       success: true,
-      data: {
-        id: result.insertedId,
-        ...metadata,
-      },
+      data: metadata,
     });
   } catch (error) {
     console.error('Error uploading image:', error);
