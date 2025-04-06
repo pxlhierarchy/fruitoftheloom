@@ -39,12 +39,12 @@ export function AuthProvider({ children }) {
       }
 
       // Store the token and user in state
-      setToken(data.token);
-      setUser(data.user);
+      setToken(data.data.token);
+      setUser(data.data.user);
 
       // Store the token and user in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user', JSON.stringify(data.data.user));
 
       return data;
     } catch (error) {
@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
