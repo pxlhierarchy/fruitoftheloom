@@ -98,14 +98,14 @@ function HomeContent() {
             {images.map((image) => (
               <div key={image._id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src={image.blobUrl}
+                  src={image.url}
                   alt={image.filename}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
                   <p className="font-semibold truncate">{image.filename}</p>
                   <p className="text-sm text-gray-500">
-                    {new Date(image.timestamp).toLocaleString()}
+                    {new Date(image.uploadedAt).toLocaleString()}
                   </p>
                 </div>
               </div>
