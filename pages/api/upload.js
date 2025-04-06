@@ -67,12 +67,8 @@ export default async function handler(req, res) {
     // Create a new file object with the correct data
     const fileToUpload = new Blob([fileData], { type: file.mimetype });
     
-    // Get the original filename
-    const originalFilename = file.originalFilename || 'image.jpg';
-    
     // Log the file details for debugging
     console.log('File to upload:', {
-      originalFilename,
       type: file.mimetype,
       size: file.size
     });
@@ -80,8 +76,7 @@ export default async function handler(req, res) {
     // Upload to Vercel Blob Storage
     const { url, pathname, filename, mimeType } = await uploadToBlob(fileToUpload, {
       access: 'public',
-      folder: 'images',
-      originalFilename: originalFilename // Pass the original filename as an option
+      folder: 'images'
     });
 
     // Log the upload result for debugging
