@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ImageCalendarGrid() {
   const router = useRouter();
+  const { token } = useAuth();
   const [images, setImages] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +30,12 @@ export default function ImageCalendarGrid() {
       const endDate = new Date(year, month, 0, 23, 59, 59);
       
       const response = await fetch(
-        `/api/images?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `/api/images?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       
       const data = await response.json();
@@ -112,7 +119,7 @@ export default function ImageCalendarGrid() {
               {dayImages.length === 1 ? (
                 <div className="h-full w-full relative">
                   <img
-                    src={dayImages[0].blobUrl}
+                    src={dayImages[0].url}
                     alt={dayImages[0].filename}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
@@ -126,7 +133,7 @@ export default function ImageCalendarGrid() {
                   {dayImages.slice(0, 4).map((image, index) => (
                     <div key={image._id} className="relative overflow-hidden group/item">
                       <img
-                        src={image.blobUrl}
+                        src={image.url}
                         alt={image.filename}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
                       />

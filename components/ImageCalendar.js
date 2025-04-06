@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ImageCalendar() {
   const router = useRouter();
+  const { token } = useAuth();
   const [images, setImages] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +29,12 @@ export default function ImageCalendar() {
       const endDate = new Date(year, month, 0, 23, 59, 59);
       
       const response = await fetch(
-        `/api/images?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `/api/images?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       
       const data = await response.json();
@@ -101,7 +108,7 @@ export default function ImageCalendar() {
               {dayImages.slice(0, 4).map((image, index) => (
                 <div key={image._id} className="relative group">
                   <img
-                    src={image.blobUrl}
+                    src={image.url}
                     alt={image.filename}
                     className="w-full h-14 object-cover rounded"
                   />
