@@ -1,5 +1,4 @@
 import { registerUser } from '../../../lib/auth';
-import { connectToDatabase } from '../../../lib/mongodb';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -30,15 +29,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Invalid role' });
     }
 
-    // Connect to the database
-    const { db } = await connectToDatabase();
-
-    // Check if user already exists
-    const existingUser = await db.collection('users').findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ success: false, error: 'User already exists' });
-    }
-
     // Register the user
     const user = await registerUser({ email, password, role });
 
@@ -49,6 +39,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return res.status(500).json({ success: false, error: 'Error registering user' });
+    return res.status(500).json({ success: false, error: error.message || 'Error registering user' });
   }
 } 
