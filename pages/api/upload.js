@@ -71,19 +71,19 @@ export default async function handler(req, res) {
       file.on('error', reject);
     });
 
-    // Create a new file object with the correct data
-    const fileToUpload = new Blob([fileData], { type: file.mimetype });
-    
     // Log the file details for debugging
     console.log('File to upload:', {
       type: file.mimetype,
-      size: file.size
+      size: file.size,
+      originalFilename: file.originalFilename
     });
 
     // Upload to Vercel Blob Storage
-    const { url, pathname, filename, mimeType } = await uploadToBlob(fileToUpload, {
+    const { url, pathname, filename, mimeType } = await uploadToBlob(fileData, {
       access: 'public',
-      folder: 'images'
+      folder: 'images',
+      type: file.mimetype,
+      originalFilename: file.originalFilename
     });
 
     // Log the upload result for debugging
