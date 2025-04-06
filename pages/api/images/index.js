@@ -72,6 +72,12 @@ export default async function handler(req, res) {
         total: total || 0,
         skip: skipNum,
         limit: limitNum,
+        pagination: {
+          hasMore: (skipNum + limitNum) < total,
+          total: total || 0,
+          skip: skipNum,
+          limit: limitNum
+        }
       },
     });
   } catch (error) {

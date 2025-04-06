@@ -41,7 +41,7 @@ function HomeContent() {
         setImages(prev => [...prev, ...data.data.images]);
       }
       
-      setHasMore(data.data.pagination.hasMore);
+      setHasMore(data.data.pagination?.hasMore || false);
     } catch (err) {
       console.error('Error fetching images:', err);
       setError(err.message || 'Error fetching images');
@@ -107,7 +107,7 @@ function HomeContent() {
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/placeholder.png';
+                      e.target.src = '/placeholder.svg';
                       console.error('Failed to load image:', image.url);
                     }}
                   />
