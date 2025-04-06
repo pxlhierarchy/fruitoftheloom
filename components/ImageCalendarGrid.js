@@ -134,8 +134,13 @@ export default function ImageCalendarGrid() {
                     <div key={image._id} className="relative overflow-hidden group/item">
                       <img
                         src={image.url}
-                        alt={image.filename}
+                        alt={image.filename || 'Calendar image'}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/placeholder.png';
+                          console.error('Failed to load image:', image.url);
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-end">
                         <span className="text-white text-xs p-1 truncate w-full">{image.filename}</span>
