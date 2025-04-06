@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import { uploadToBlob } from '../../lib/blob-storage';
 import { verifyToken } from '../../lib/auth';
-import { getRedisClient } from '../../lib/redis';
+import { getRedisClient, addToRedisList } from '../../lib/redis';
 
 // Disable the default body parser to handle form data
 export const config = {
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     await redis.set(imageId, JSON.stringify(metadata));
 
     // Add the image ID to a list of all images
-    await redis.lpush('images:list', imageId);
+    await addToRedisList(redis, 'images:list', imageId);
 
     // Return success response
     return res.status(200).json({

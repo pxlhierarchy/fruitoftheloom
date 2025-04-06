@@ -1,5 +1,5 @@
 import { verifyToken } from '../../../lib/auth';
-import { getRedisClient } from '../../../lib/redis';
+import { getRedisClient, getFromRedisList, getRedisListLength } from '../../../lib/redis';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     }
 
     // Get all image IDs
-    const imageIds = await redis.lrange('images:list', skipNum, skipNum + limitNum - 1);
+    const imageIds = await getFromRedisList(redis, 'images:list', skipNum, skipNum + limitNum - 1);
     
     // Get image metadata for each ID
     const images = await Promise.all(
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
     // Get total count
-    const total = await redis.llen('images:list');
+    const total = await getRedisListLength(redis, 'images:list');
 
     // Return success response
     return res.status(200).json({
