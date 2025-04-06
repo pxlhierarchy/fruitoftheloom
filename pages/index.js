@@ -3,6 +3,8 @@ import ImageUploader from '../components/ImageUploader';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
 import FixImagesButton from '../components/FixImagesButton';
+import CheckImagesButton from '../components/CheckImagesButton';
+import ReuploadImagesButton from '../components/ReuploadImagesButton';
 
 export default function Home() {
   return (
@@ -86,6 +88,11 @@ function HomeContent() {
       
       <div className="mb-12">
         <FixImagesButton />
+      </div>
+      
+      <div className="mb-12">
+        <CheckImagesButton />
+        <ReuploadImagesButton />
       </div>
       
       <h2 className="text-2xl font-bold mb-6">Uploaded Images</h2>
