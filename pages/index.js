@@ -33,6 +33,8 @@ function HomeContent() {
         throw new Error(data.error || 'Failed to fetch images');
       }
       
+      console.log('Fetched images:', data.data.images);
+      
       if (pageNum === 0) {
         setImages(data.data.images);
       } else {
@@ -41,6 +43,7 @@ function HomeContent() {
       
       setHasMore(data.data.pagination.hasMore);
     } catch (err) {
+      console.error('Error fetching images:', err);
       setError(err.message || 'Error fetching images');
     } finally {
       setLoading(false);
@@ -96,16 +99,26 @@ function HomeContent() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {images.map((image) => (
-              <div key={image._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <img
-                  src={image.url}
-                  alt={image.filename}
-                  className="w-full h-48 object-cover"
-                />
+              <div key={image.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="relative w-full h-48">
+                  <img
+                    src={image.url}
+                    alt={image.filename}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/placeholder.png';
+                      console.error('Failed to load image:', image.url);
+                    }}
+                  />
+                </div>
                 <div className="p-4">
                   <p className="font-semibold truncate">{image.filename}</p>
                   <p className="text-sm text-gray-500">
                     {new Date(image.uploadedAt).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Uploaded by {image.uploadedBy}
                   </p>
                 </div>
               </div>
