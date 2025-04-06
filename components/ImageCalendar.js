@@ -55,13 +55,17 @@ export default function ImageCalendar() {
       
       // Group images by day
       const groupedImages = {};
-      data.data.images.forEach(image => {
-        const day = new Date(image.uploadedAt).getDate();
-        if (!groupedImages[day]) {
-          groupedImages[day] = [];
-        }
-        groupedImages[day].push(image);
-      });
+      if (data.data && data.data.images && Array.isArray(data.data.images)) {
+        data.data.images.forEach(image => {
+          if (image && image.uploadedAt) {
+            const day = new Date(image.uploadedAt).getDate();
+            if (!groupedImages[day]) {
+              groupedImages[day] = [];
+            }
+            groupedImages[day].push(image);
+          }
+        });
+      }
       
       setImages(groupedImages);
       setError(null);
