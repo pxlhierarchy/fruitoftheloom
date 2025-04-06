@@ -138,9 +138,19 @@ export default function ImageCalendarGrid() {
                           alt={image.filename || 'Calendar image'}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            console.error('Failed to load image:', image.url);
-                            e.target.src = '/placeholder.svg';
-                            e.target.onerror = null; // Prevent infinite loop
+                            // Only log the error once per image
+                            if (!e.target.dataset.errorLogged) {
+                              console.error('Failed to load image:', image.url);
+                              e.target.dataset.errorLogged = 'true';
+                            }
+                            
+                            // Only set placeholder if not already set
+                            if (e.target.src !== '/placeholder.svg') {
+                              e.target.src = '/placeholder.svg';
+                            }
+                            
+                            // Remove the error handler to prevent repeated calls
+                            e.target.onerror = null;
                           }}
                         />
                         {image.filename && (
