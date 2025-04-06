@@ -107,18 +107,22 @@ export default function ImageCalendar() {
             <div className="grid grid-cols-2 gap-1">
               {dayImages.slice(0, 4).map((image, index) => (
                 <div key={image._id} className="relative group">
-                  <img
-                    src={image.url || '/placeholder.svg'}
-                    alt={image.filename || 'Calendar image'}
-                    className="w-full h-14 object-cover rounded"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '/placeholder.svg';
-                      console.error('Failed to load image:', image.url);
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <span className="text-white text-xs truncate px-1">{image.filename}</span>
+                  <div className="relative w-full h-full">
+                    <img
+                      src={image.url || '/placeholder.svg'}
+                      alt={image.filename || 'Calendar image'}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Failed to load image:', image.url);
+                        e.target.src = '/placeholder.svg';
+                        e.target.onerror = null; // Prevent infinite loop
+                      }}
+                    />
+                    {image.filename && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm truncate">
+                        {image.filename}
+                      </div>
+                    )}
                   </div>
                   {index === 3 && dayImages.length > 4 && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-xs rounded">

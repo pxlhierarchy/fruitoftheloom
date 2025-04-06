@@ -42,8 +42,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.' 
+      });
+    }
+
     // Upload to Vercel Blob Storage
-    const { url, pathname, filename } = await uploadToBlob(file, {
+    const { url, pathname, filename, mimeType } = await uploadToBlob(file, {
       access: 'public',
       folder: 'images',
     });
@@ -63,7 +72,7 @@ export default async function handler(req, res) {
       url: url,
       pathname: pathname,
       filename: filename,
-      mimeType: file.mimetype,
+      mimeType: mimeType,
       size: file.size,
       uploadedBy: decoded.email,
       uploadedAt: new Date().toISOString(),

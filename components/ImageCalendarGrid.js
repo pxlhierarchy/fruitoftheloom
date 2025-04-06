@@ -132,18 +132,22 @@ export default function ImageCalendarGrid() {
                 <div className="grid grid-cols-2 grid-rows-2 h-full">
                   {dayImages.slice(0, 4).map((image, index) => (
                     <div key={image._id} className="relative overflow-hidden group/item">
-                      <img
-                        src={image.url || '/placeholder.svg'}
-                        alt={image.filename || 'Calendar image'}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = '/placeholder.svg';
-                          console.error('Failed to load image:', image.url);
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-end">
-                        <span className="text-white text-xs p-1 truncate w-full">{image.filename}</span>
+                      <div className="relative w-full h-full">
+                        <img
+                          src={image.url || '/placeholder.svg'}
+                          alt={image.filename || 'Calendar image'}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.error('Failed to load image:', image.url);
+                            e.target.src = '/placeholder.svg';
+                            e.target.onerror = null; // Prevent infinite loop
+                          }}
+                        />
+                        {image.filename && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm truncate">
+                            {image.filename}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
