@@ -1,4 +1,4 @@
-import { createClient } from 'redis';
+const { createClient } = require('redis');
 
 async function checkUser() {
   try {
