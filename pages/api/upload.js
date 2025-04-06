@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     }
 
     // Upload to Vercel Blob Storage
-    const { url, pathname } = await uploadToBlob(file, {
+    const { url, pathname, filename } = await uploadToBlob(file, {
       access: 'public',
       folder: 'images',
     });
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       id: imageId,
       url: url,
       pathname: pathname,
-      filename: file.originalFilename || file.name,
+      filename: filename,
       mimeType: file.mimetype,
       size: file.size,
       uploadedBy: decoded.email,
