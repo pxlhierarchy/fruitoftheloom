@@ -47,16 +47,25 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
+    // Log the raw file object for debugging
+    console.log('Raw file object:', {
+      mimetype: file.mimetype,
+      type: file.type,
+      size: file.size,
+      originalFilename: file.originalFilename
+    });
+
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    console.log('File mimetype:', file.mimetype);
+    const fileType = file.mimetype || file.type || '';
+    console.log('File type:', fileType);
     
     // Check if the mimetype is in the allowed list or if it's a generic image type
-    const isAllowedType = allowedTypes.includes(file.mimetype) || 
-                          file.mimetype.startsWith('image/');
+    const isAllowedType = allowedTypes.includes(fileType) || 
+                          fileType.startsWith('image/');
     
     if (!isAllowedType) {
-      console.error('Invalid file type:', file.mimetype);
+      console.error('Invalid file type:', fileType);
       return res.status(400).json({ 
         success: false, 
         error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.' 
@@ -72,7 +81,7 @@ export default async function handler(req, res) {
         const buffer = Buffer.concat(chunks);
         console.log('File data read successfully:', {
           size: buffer.length,
-          mimetype: file.mimetype
+          mimetype: fileType
         });
         resolve(buffer);
       });
@@ -84,7 +93,7 @@ export default async function handler(req, res) {
 
     // Log the file details for debugging
     console.log('File to upload:', {
-      type: file.mimetype,
+      type: fileType,
       size: file.size,
       originalFilename: file.originalFilename,
       fileDataSize: fileData.length
@@ -94,7 +103,7 @@ export default async function handler(req, res) {
     const { url, pathname, filename, mimeType } = await uploadToBlob(fileData, {
       access: 'public',
       folder: 'images',
-      type: file.mimetype,
+      type: fileType,
       originalFilename: file.originalFilename
     });
 
