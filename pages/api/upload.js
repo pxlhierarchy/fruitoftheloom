@@ -66,16 +66,28 @@ export default async function handler(req, res) {
     // Read the file data
     const fileData = await new Promise((resolve, reject) => {
       const chunks = [];
-      file.on('data', chunk => chunks.push(chunk));
-      file.on('end', () => resolve(Buffer.concat(chunks)));
-      file.on('error', reject);
+      const stream = file.createReadStream();
+      stream.on('data', chunk => chunks.push(chunk));
+      stream.on('end', () => {
+        const buffer = Buffer.concat(chunks);
+        console.log('File data read successfully:', {
+          size: buffer.length,
+          mimetype: file.mimetype
+        });
+        resolve(buffer);
+      });
+      stream.on('error', (err) => {
+        console.error('Error reading file stream:', err);
+        reject(err);
+      });
     });
 
     // Log the file details for debugging
     console.log('File to upload:', {
       type: file.mimetype,
       size: file.size,
-      originalFilename: file.originalFilename
+      originalFilename: file.originalFilename,
+      fileDataSize: fileData.length
     });
 
     // Upload to Vercel Blob Storage
